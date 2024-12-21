@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Oraciones con Voz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            background-color: #6200ea;
+            color: white;
+            text-align: center;
+            padding: 40px;
+            width: 100%;
+            font-size: 2rem;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 95%;
+            max-width: 1200px;
+            margin-top: 30px;
+        }
+
+        .categorias {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            justify-items: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .categoria[data-categoria="pronombres"] { background-color: #ffcccb; } /* Rojo claro */
+        .categoria[data-categoria="verbos"] { background-color: #ccffcc; } /* Verde claro */
+        .categoria[data-categoria="sustantivos"] { background-color: #add8e6; } /* Azul claro */
+        .categoria[data-categoria="adjetivos"] { background-color: #ffffcc; } /* Amarillo claro */
+        .categoria[data-categoria="preposiciones"] { background-color: #ffdab9; } /* Durazno */
+        .categoria[data-categoria="conjunciones"] { background-color: #d8bfd8; } /* Lila */
+        .categoria[data-categoria="interjecciones"] { background-color: #ffb6c1; } /* Rosa claro */
+
+        .categoria {
+            border: 2px solid #ccc;
+            border-radius: 15px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .categoria:hover {
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+
+        .palabras {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .palabra {
+            background-color: #bb86fc;
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-align: center;
+            cursor: grab;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .palabra span {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .palabra:hover {
+            transform: scale(1.1);
+            background-color: #9c4dcc;
+        }
+
+        .area-oraciones {
+            width: 90%;
+            max-width: 1000px;
+            min-height: 200px;
+            border: 3px dashed #6200ea;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #fff;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+
+        .botones {
+            display: flex;
+            gap: 20px;
+        }
+
+        .botones button {
+            padding: 20px 30px;
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .botones button:hover {
+            background-color: #3700b3;
+            transform: scale(1.1);
+        }
+
+        footer {
+            background-color: #6200ea;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            font-size: 1.5rem;
+            position: relative;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Generador de Oraciones con Voz</h1>
+        <p>Arrastra palabras o haz clic para construir tus oraciones 🎉</p>
+    </header>
+
+    <main>
+        <!-- Categorías -->
+        <div class="categorias" id="categorias">
+            <div class="categoria" data-categoria="pronombres">🙋‍♂️ Pronombres</div>
+            <div class="categoria" data-categoria="verbos">⚡ Verbos</div>
+            <div class="categoria" data-categoria="sustantivos">📦 Sustantivos</div>
+            <div class="categoria" data-categoria="adjetivos">🌟 Adjetivos</div>
+            <div class="categoria" data-categoria="preposiciones">➡️ Preposiciones</div>
+            <div class="categoria" data-categoria="conjunciones">🔗 Conjunciones</div>
+            <div class="categoria" data-categoria="interjecciones">😲 Interjecciones</div>
+        </div>
+
+        <!-- Palabras -->
+        <div class="palabras" id="palabras">
+            <!-- Las palabras se cargarán dinámicamente -->
+        </div>
+
+        <!-- Área de generación de oraciones -->
+        <div class="area-oraciones" id="area-oraciones">
+            📝 Arrastra palabras aquí o haz clic para construir tu oración.
+        </div>
+
+        <!-- Botones -->
+        <div class="botones">
+            <button id="generar-oracion">✨ Generar Oración</button>
+            <button id="configurar-voz">⚙️ Configurar Voz</button>
+            <button id="limpiar-oracion">🗑️ Limpiar</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>Con ❤️ y dedicación para todos, de parte de Wagner Gian Emanuel</p>
+    </footer>
+
+    <script>
+        const palabrasPorCategoria = {
+            pronombres: [
+                { texto: 'Yo', emoji: '🙋‍♂️' },
+                { texto: 'Tú', emoji: '🙋‍♀️' },
+                { texto: 'Él', emoji: '👨' },
+                { texto: 'Ella', emoji: '👩' },
+                { texto: 'Nosotros', emoji: '👨‍👩‍👧‍👦' },
+                { texto: 'Ellos', emoji: '👥' }
+            ],
+            verbos: [
+                { texto: 'quiero', emoji: '❤️' },
+                { texto: 'necesito', emoji: '🤲' },
+                { texto: 'puedo', emoji: '💪' },
+                { texto: 'debo', emoji: '🧠' }
+            ],
+            preposiciones: [
+                { texto: 'en', emoji: '📍' },
+                { texto: 'con', emoji: '🤝' },
+                { texto: 'sobre', emoji: '⬆️' },
+                { texto: 'para', emoji: '🎯' }
+            ],
+            conjunciones: [
+                { texto: 'y', emoji: '➕' },
+                { texto: 'o', emoji: '❓' },
+                { texto: 'pero', emoji: '⚖️' },
+                { texto: 'porque', emoji: '💡' }
+            ],
+            interjecciones: [
+                { texto: '¡Oh!', emoji: '😲' },
+                { texto: '¡Ah!', emoji: '😮' },
+                { texto: '¡Vaya!', emoji: '😃' },
+                { texto: '¡Uf!', emoji: '😅' }
+            ]
+        };
+
+        const palabrasDiv = document.getElementById('palabras');
+        const areaOraciones = document.getElementById('area-oraciones');
+
+        function cargarPalabras(categoria) {
+            palabrasDiv.innerHTML = '';
+            const palabras = palabrasPorCategoria[categoria];
+            if (palabras) {
+                palabras.forEach(palabra => {
+                    const palabraDiv = document.createElement('div');
+                    palabraDiv.className = 'palabra';
+                    palabraDiv.innerHTML = `<span>${palabra.emoji}</span>${palabra.texto}`;
+                    palabraDiv.draggable = true;
+
+                    palabraDiv.addEventListener('click', () => {
+                        const palabraSeleccionada = document.createElement('div');
+                        palabraSeleccionada.className = 'palabra';
+                        palabraSeleccionada.innerHTML = `<span>${palabra.emoji}</span>${palabra.texto}`;
+                        areaOraciones.appendChild(palabraSeleccionada);
+                    });
+
+                    palabraDiv.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/html', palabraDiv.outerHTML);
+                    });
+
+                    palabrasDiv.appendChild(palabraDiv);
+                });
+            }
+        }
+
+        areaOraciones.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        areaOraciones.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const data = e.dataTransfer.getData('text/html');
+            areaOraciones.innerHTML += data;
+        });
+
+        document.getElementById('generar-oracion').addEventListener('click', () => {
+            // Genera la oración sin emojis
+            const palabras = Array.from(areaOraciones.children)
+                .map(p => p.textContent.trim().replace(/[\u{1F300}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, ''))
+                .join(' ');
+            const utterance = new SpeechSynthesisUtterance(palabras);
+            utterance.volume = 1;
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            speechSynthesis.speak(utterance);
+        });
+
+        document.getElementById('limpiar-oracion').addEventListener('click', () => {
+            areaOraciones.innerHTML = '📝 Arrastra palabras aquí o haz clic para construir tu oración.';
+        });
+
+        document.querySelectorAll('.categoria').forEach(categoria => {
+            categoria.addEventListener('click', () => {
+                const categoriaSeleccionada = categoria.dataset.categoria;
+                cargarPalabras(categoriaSeleccionada);
+            });
+        });
+    </script>
+</body>
+</html>
